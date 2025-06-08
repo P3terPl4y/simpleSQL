@@ -118,10 +118,3 @@ db.GuardarBackup("backup_20250608.db")
 *"Código simple, vida simple." — P3terPl4y, 2025*  
 
 ```
-
-### 📌 **Notas adicionales**:  
-1. **Formato**: Usa este archivo como `DOCUMENTACION.md` en la raíz de tu repo.  
-2. **Estilo**: Mantén la consistencia con ejemplos en español y código resaltado.  
-3. **Personalización**: Añade un logo ASCII si quieres darle identidad.  
-
-¿Necesitas ajustar algo o añadir más detalles? 😊 
