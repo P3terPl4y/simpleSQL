@@ -3,7 +3,7 @@
 
 # **Documentación de simpleSQL**  
 ### *Framework minimalista para SQLite3 en Python*  
-**Versión**: v0.1-beta · **Autor**: [P3terPl4y](https://github.com/P3terPl4y) · **Licencia**: MIT  
+**Versión**: v0.1-beta · **Autor**: [P3terPl4y](https://github.com/P3terPl4ay) · **Licencia**: MIT  
 
 ---
 
