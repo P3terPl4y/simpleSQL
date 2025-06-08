@@ -1,4 +1,3 @@
-Aquí tienes la documentación completa para tu archivo **`DOCUMENTACION.md`** del framework **simpleSQL**, diseñada para ser clara, técnica y alineada con tu filosofía de simplicidad y crédito al autor:
 
 ---
 
