@@ -1,3 +1,11 @@
+¡Hola comunidad! 👋  
+
+Soy un dev cubano y he creado **simpleSQL**, un framework para SQLite3 hecho *enteramente en un Samsung*.  
+¿Por qué? Porque quería demostrar que se puede programar incluso con recursos limitados.  
+
+🔗 Repo: https://github.com/P3terPl4y/simpleSQL  
+🌟 Necesito ayuda: *feedback, estrellas, o difusión*. ¡Todo cuenta!  
+  
 
 ---
 
