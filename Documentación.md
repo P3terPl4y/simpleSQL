@@ -104,7 +104,7 @@ db.GuardarBackup("backup_20250608.db")
 ---
 
 ## **📬 8. Contacto**  
-- **Issues en GitHub**: Reporta bugs [aquí](https://github.com/P3terPl4y/simpleSQL/issues).  
+- **Issues en GitHub**: Reporta bugs [aquí](https://github.com/P3terPl4y).  
 
 ---  
 *"Código simple, vida simple." — P3terPl4y, 2025*  
