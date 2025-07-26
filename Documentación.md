@@ -46,7 +46,7 @@ db.InsertarDatos("usuarios", 1, "Pedro")
 from simpleSQL import InitDataBase  
 
 # Crear/conectar a una base de datos  
-db = InitDataBase("mi_db.db")  
+db = IniciarBD("mi_db.db")  
 ```  
 
 ### **Métodos principales**  
