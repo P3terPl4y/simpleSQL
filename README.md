@@ -6,7 +6,7 @@
 
 ## 🧒 Mi historia: Programando desde el móvil
 
-"Soy Peter, tengo 16 años y llevo poco más de un año aprendiendo Python. Como no tenía computadora, desarrollé SimpleSQL en mi teléfono usando Pydroid 3. Es mi primer proyecto 'serio' y aunque no es perfecto, funciona y me ayudó mucho a entender bases de datos."
+"Soy Elvin, tengo 16 años y llevo poco más de un año aprendiendo Python. Como no tenía computadora, desarrollé SimpleSQL en mi teléfono usando Pydroid 3. Es mi primer proyecto 'serio' y aunque no es perfecto, funciona y me ayudó mucho a entender bases de datos."
 
 ## ❓ ¿Para qué sirve SimpleSQL?
 
