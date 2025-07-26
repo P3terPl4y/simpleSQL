@@ -1,120 +1,91 @@
-¡Hola comunidad! 👋  
+# SimpleSQL: Haz SQLite fácil ✨
 
-Soy un dev cubano y he creado **simpleSQL**, un framework para SQLite3 hecho *enteramente en un Samsung*.  
-¿Por qué? Porque quería demostrar que se puede programar incluso con recursos limitados.  
+![SimpleSQL Logo](https://img.shields.io/badge/Hecho%20con-Pydroid%203-blue?logo=android) ![Python Version](https://img.shields.io/badge/Python-3.8+-blue?logo=python)
 
-🔗 Repo: https://github.com/P3terPl4y/simpleSQL  
-🌟 Necesito ayuda: *feedback, estrellas, o difusión*. ¡Todo cuenta!  
-  
+**SimpleSQL** es una herramienta que creé para hacer más fácil trabajar con bases de datos SQLite, especialmente cuando estás empezando con Python. Lo desarrollé principalmente en mi teléfono Samsung S8 usando Pydroid 3 mientras aprendía a programar.
 
----
+## 🧒 Mi historia: Programando desde el móvil
 
-# **Documentación de simpleSQL**  
-### *Framework minimalista para SQLite3 en Python*  
-**Versión**: v0.1-beta · **Autor**: [P3terPl4y](https://github.com/P3terPl4ay) · **Licencia**: MIT  
+"Soy Peter, tengo 16 años y llevo poco más de un año aprendiendo Python. Como no tenía computadora, desarrollé SimpleSQL en mi teléfono usando Pydroid 3. Es mi primer proyecto 'serio' y aunque no es perfecto, funciona y me ayudó mucho a entender bases de datos."
 
----
+## ❓ ¿Para qué sirve SimpleSQL?
 
-## **📌 1. Introducción**  
-**simpleSQL** nace para eliminar la complejidad de SQLite3, ofreciendo métodos intuitivos en español que abstraen operaciones CRUD. Ideal para:  
-- Prototipos rápidos.  
-- Proyectos pequeños que valoran simplicidad.  
-- Devs hispanohablantes.  
+Cuando empecé con SQLite, me frustraba tener que escribir tanto código repetitivo. SimpleSQL simplifica:
 
-**Filosofía clave**:  
-```python  
-# Menos esto:  
-cursor.execute("INSERT INTO usuarios VALUES (?, ?)", (1, "Pedro"))  
+```python
+# Sin SimpleSQL
+cursor.execute("CREATE TABLE usuarios (id INTEGER PRIMARY KEY, nombre TEXT)")
+cursor.execute("INSERT INTO usuarios (nombre) VALUES (?)", ("Ana",))
 
-# Más esto:  
-db.InsertarDatos("usuarios", 1, "Pedro")  
-```  
-
----
-
-## **🔧 2. Instalación**  
-### Requisitos:  
-- Python 3.6+.  
-- SQLite3 (incluido en Python).  
-
-### Opciones:  
-1. **Clonar repositorio**:  
-   ```bash  
-   git clone https://github.com/P3terPl4y/simpleSQL.git  
-   cd simpleSQL  
-   ```  
-2. **Instalar manualmente**:  
-   Copia el archivo `simpleSQL.py` a tu proyecto.  
-
----
-
-## **🚀 3. Uso básico**  
-### **Inicialización**  
-```python  
-from simpleSQL import InitDataBase  
-
-# Crear/conectar a una base de datos  
-db = InitDataBase("mi_db.db")  
-```  
-
-### **Métodos principales**  
-| Método               | Parámetros                  | Ejemplo                          |  
-|-----------------------|-----------------------------|----------------------------------|  
-| `CrearTabla()`        | `nombre_tabla, [columnas]`  | `db.CrearTabla("usuarios", ["id INTEGER", "nombre TEXT"])` |  
-| `InsertarDatos()`     | `tabla, *valores`           | `db.InsertarDatos("usuarios", 1, "Ana")` |  
-| `ConsultarDatos()`    | `tabla, condicion(opcional)` | `db.ConsultarDatos("usuarios", "id = 1")` |  
-| `EliminarTabla()`     | `nombre_tabla`              | `db.EliminarTabla("logs_old")` |  
-
----
-
-## **⚙️ 4. Métodos avanzados**  
-### **Transacciones**  
-```python  
-# Ejecutar múltiples operaciones atómicas  
-with db:  
-    db.InsertarDatos("ventas", 100, "Producto A")  
-    db.InsertarDatos("inventario", -1, "Producto A")  
-```  
-
-### **Backup automático**  
-```python  
-db.GuardarBackup("backup_20250608.db")  
-```  
-
----
-
-## **📜 5. Filosofía y convenciones**  
-- **Nombres en español**: Todos los métodos usan español para ser accesibles.  
-- **Sin magia oculta**: El código es fácil de leer y modificar.  
-- **Crédito**: Si usas simpleSQL, menciona al autor:  
-  ```markdown  
-  Desarrollado con [simpleSQL](https://github.com/P3terPl4y/simpleSQL) por @P3terPl4y.  
-  ```  
-
----
-
-## **⚠️ 6. Limitaciones**  
-- **No es un ORM**: No soporta relaciones complejas o migraciones.  
-- **Seguridad**: Usa parámetros internos para evitar SQL injection, pero valida tus inputs.  
-
----
-
-## **🌍 7. Contribuir**  
-¿Quieres mejorar simpleSQL?  
-1. Haz fork del repo.  
-2. Añade tests para nuevos métodos.  
-3. Envía un PR con cambios claros.  
-
-**Roadmap**:  
-- [ ] Soporte para transacciones anidadas.  
-- [ ] Documentación en inglés.  
-
----
-
-## **📬 8. Contacto**  
-- **Issues en GitHub**: Reporta bugs [aquí](https://github.com/P3terPl4y).  
-
----  
-*"Código simple, vida simple." — P3terPl4y, 2025*  
-
+# Con SimpleSQL
+db.CrearTabla("usuarios", "nombre TEXT")
+db.InsertarDatos("usuarios", "nombre", "Ana")
 ```
+
+## 🛠️ ¿Qué puedes hacer?
+
+| Operación | Ejemplo |
+|-----------|---------|
+| Crear tabla | `db.CrearTabla("amigos", "nombre TEXT", "edad INT")` |
+| Insertar datos | `db.InsertarDatos("amigos", "nombre,edad", "Juan", 15)` |
+| Consultar | `db.ConsultarDatos("amigos")` |
+| Actualizar | `db.Actualizar("amigos", "edad=16", "nombre='Juan'")` |
+| Borrar tabla | `db.EliminarTabla("amigos")` |
+
+## 🔒 Protección básica
+
+Añadí un sistema simple para bloquear intentos de inyección SQL:
+
+```python
+# Si alguien intenta esto:
+db.ConsultarDatos("usuarios; DROP TABLE usuarios;--")
+
+# SimpleSQL lo convierte en:
+db.ConsultarDatos("usuarios DROP TABLE usuarios")
+```
+
+## 📦 Cómo usar
+
+1. Descarga `simple_sql.py` y `sanitizar.py`
+2. En tu código:
+
+```python
+from simple_sql import IniciarBD
+
+# Crea o conecta a una base de datos
+db = IniciarBD("mi_base.db")
+
+# Crea una tabla de juegos
+db.CrearTabla("juegos", "nombre TEXT", "puntaje INT")
+
+# Añade tu puntaje
+db.InsertarDatos("juegos", "nombre,puntaje", "MiJuego", 100)
+
+# Ver todos los puntajes
+db.ConsultarDatos("juegos")
+```
+
+## 🧪 Pruebas
+
+Incluyo pruebas para asegurarme que todo funciona bien. Para ejecutarlas:
+
+```bash
+python -m unittest discover -s tests
+```
+
+> Las pruebas las hice con ayuda de DeepSeek-R1, un asistente de IA que me ayudó a crear casos de prueba completos.
+
+## 📱 ¿Por qué móvil?
+
+- No tenía computadora propia
+- Pydroid 3 me permitió programar en cualquier lugar
+- Quería demostrar que no necesitas equipo caro para crear cosas interesantes
+
+## 💌 ¿Preguntas o sugerencias?
+
+Si tienes dudas o ideas para mejorar SimpleSQL, escríbeme a elvinfelipetorres@gmail.com o abre un issue aquí en GitHub. ¡Estoy aprendiendo y agradezco toda ayuda!
+
+---
+
+**SimpleSQL** - Hecho con 💚 por un estudiante de 16 años en Cuba  
+*¿Quién dijo que necesitas una supercomputadora para programar?* 😊
