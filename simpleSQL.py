@@ -16,6 +16,7 @@ class IniciarBD:
                 f.write(self.name)
         except Exception as e:
             print(f"Error: {e}")
+        print(f"Exito al Conectar con {name}")
         
         
         
@@ -30,7 +31,7 @@ class IniciarBD:
             print(print_campos)
         except Exception as e:
             print(f"Error: {e}")
-        
+        print(f"Exito al crear la tabla {name}")
         
     
     def InsertarDatos(self, name, campos, *valores):
@@ -47,15 +48,16 @@ class IniciarBD:
             self.conexion.commit()
         except Exception as e:
             print(f"Error: {e}")                
-        
+        print(f"Exito al insertar los datos")
+
 
     def EliminarTabla(self, name):
-         try:
-             name=sanitizar(name)
-             self.cursor.execute(f"DROP TABLE IF EXISTS {name}")
-         except Exception as e:
-             print(f"Error: {e}")
-
+        try:
+            name=sanitizar(name)
+            self.cursor.execute(f"DROP TABLE IF EXISTS {name}")
+        except Exception as e:
+            print(f"Error: {e}")
+        print(f"Exito al eliminar la tabla {name}")
       
         
     def ConsultarDatos(self,name):
@@ -66,11 +68,12 @@ class IniciarBD:
             filas=[]
             resultados = self.cursor.fetchall()
             for fila in resultados:
-                filas.append(filas)
-            print(filas) 
+                filas.append(fila)
+                print(fila)
         except Exception as e:
-            print(f"Error: {e}")     
-         
+            print(f"Error: {e}")
+            
+        return filas
          
          
     def Actualizar(self, name,dato,condicion):
@@ -84,7 +87,7 @@ class IniciarBD:
             self.cursor.commit()
         except Exception as e:
            print(f"Error: {e}")
-           
+        print("Exito al actualizar")
            
            
     def Cerrar(self):
@@ -92,4 +95,10 @@ class IniciarBD:
             self.conexion.close()
         except Exception as e:
             print(f"Error: {e}")
-
+        print("Conexion cerrada con exito")
+        
+db=IniciarBD("user")
+db.CrearTabla("users","user TEXT NOT NULL")
+db.InsertarDatos("users","user","Elvin@hotmail.com")
+db.ConsultarDatos("users")
+db.Cerrar()
