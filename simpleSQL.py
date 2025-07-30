@@ -63,10 +63,10 @@ class IniciarBD:
             name=sanitizar(name)                              
                                              
             self.cursor.execute(f"SELECT * FROM {name}")
-            filas=""
+            filas=[]
             resultados = self.cursor.fetchall()
             for fila in resultados:
-                filas+=f"{fila}\n"
+                filas.append(filas)
             print(filas) 
         except Exception as e:
             print(f"Error: {e}")     
