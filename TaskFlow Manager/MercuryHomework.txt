@@ -1,0 +1,175 @@
+package main
+
+import (
+	"TaskFlowManager/database"
+	"TaskFlowManager/middleware"
+	"TaskFlowManager/rutas"
+	"log"
+
+	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/middleware/cors"
+	"github.com/gofiber/fiber/v3/middleware/logger"
+)
+
+func main() {
+
+	database.Connect()
+	defer database.DB.Close()
+
+	app := fiber.New()
+
+	app.Use(cors.New())
+	app.Use(logger.New())
+
+	app.Use(middleware.Middleware)
+
+	rutas.Rutas(app)
+
+	log.Fatal(app.Listen(":8000"))
+
+}
+/////////////////////////////////////////////////////////////////
+package database
+
+import (
+	"database/sql"
+	"fmt"
+	"log"
+
+	_ "github.com/mattn/go-sqlite3"
+)
+
+var DB *sql.DB
+
+func Connect() {
+	var err error
+	DB, err = sql.Open("sqlite3", "Tareas.db")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err = DB.Ping(); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Conexion Exitosa")
+	_, err = DB.Exec("CREATE TABLE IF NOT EXISTS tareas (tarea TEXT NOT NULL,plaso TEXT NOT NULL);")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+/////////////////////////////////////////////
+package datos
+
+type Datos struct {
+	Tarea string `json:"tarea"`
+	Plaso string `json:"plaso"`
+}
+///////////////////////////
+package funciones
+
+import (
+	"TaskFlowManager/datos"
+	"database/sql"
+	"fmt"
+	"log"
+
+	"github.com/gofiber/fiber/v3"
+)
+
+func CrearTareas(c fiber.Ctx, db *sql.DB) error {
+	tarea := new(datos.Datos)
+
+	if err := c.Bind().Body(tarea); err != nil {
+		log.Fatal(err)
+	}
+
+	result, err := db.Exec("INSERT INTO tareas (tarea,plaso) VALUES (?,?)", tarea.Tarea, tarea.Plaso)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(tarea.Tarea, tarea.Plaso)
+	return c.JSON(result)
+}
+///////////////////////////////
+package funciones
+
+import (
+	"TaskFlowManager/datos"
+	"database/sql"
+	"fmt"
+	"log"
+
+	"github.com/gofiber/fiber/v3"
+)
+
+func MostrarTareas(c fiber.Ctx, db *sql.DB) error {
+	rows, err := db.Query("SELECT * FROM tareas;")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	var tareas []datos.Datos
+
+	for rows.Next() {
+		var tarea datos.Datos
+
+		if err := rows.Scan(&tarea.Tarea, &tarea.Plaso); err != nil {
+			log.Fatal(err)
+			continue
+		}
+		tareas = append(tareas, tarea)
+
+	}
+	fmt.Println(tareas)
+	return c.JSON(tareas)
+}
+////////////////////////////////////////////
+package funciones
+
+import (
+	"TaskFlowManager/datos"
+	"database/sql"
+	"log"
+
+	"github.com/gofiber/fiber/v3"
+)
+
+func EliminarTareas(c fiber.Ctx, db *sql.DB) error {
+	tarea := new(datos.Datos)
+	err := c.Bind().Body(tarea)
+	if err != nil {
+		log.Fatal(err)
+	}
+	result, err := db.Exec("DELETE FROM tareas WHERE tarea=?", tarea.Tarea)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	return c.JSON(result)
+//////////////////////////////////////
+package rutas
+
+import (
+	"TaskFlowManager/database"
+	"TaskFlowManager/funciones"
+
+	"github.com/gofiber/fiber/v3"
+)
+
+func Rutas(app *fiber.App) {
+	app.Get("/tareas", func(c fiber.Ctx) error {
+		return funciones.MostrarTareas(c, database.DB)
+	})
+	app.Post("/crear", func(c fiber.Ctx) error {
+		return funciones.CrearTareas(c, database.DB)
+	})
+	app.Delete("/eliminar", func(c fiber.Ctx) error {
+		return funciones.EliminarTareas(c, database.DB)
+	})
+}

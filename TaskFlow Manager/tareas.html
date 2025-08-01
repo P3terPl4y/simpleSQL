@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>TaskFlow Manager - Tablero Kanban</title>
+    <style>
+        :root {
+            --primary: #0066cc;
+            --danger: #cc0000;
+            --success: #00cc66;
+            --pending: #ff9900;
+            --completed: #00cc66;
+        }
+        
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(to right, #1a2980, #26d0ce);
+            color: white;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(0, 0, 30, 0.7);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        h1 {
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 5px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .board {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .column {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            min-height: 400px;
+        }
+        
+        .column-header {
+            text-align: center;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .pending-column .column-header {
+            background: var(--pending);
+        }
+        
+        .completed-column .column-header {
+            background: var(--completed);
+        }
+        
+        .task-list {
+            min-height: 350px;
+        }
+        
+        .task-item {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            cursor: grab;
+            transition: all 0.3s;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .task-item:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-3px);
+        }
+        
+        .task-item.dragging {
+            opacity: 0.5;
+            transform: scale(0.98);
+        }
+        
+        .task-name {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .task-date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .drop-zone {
+            border: 2px dashed rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }
+        
+        .drop-zone.active {
+            background: rgba(0, 200, 0, 0.2);
+            border-color: var(--success);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .board {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>TaskFlow Manager - Tablero Kanban</h1>
+        
+        <div class="form-group">
+            <label for="taskName">Nueva Tarea:</label>
+            <input type="text" id="taskName" placeholder="Nombre de la tarea">
+            
+            <label for="taskDate">Plazo:</label>
+            <input type="date" id="taskDate">
+            
+            <button id="addTask">Agregar Tarea</button>
+        </div>
+        
+        <div class="board">
+            <!-- Columna de Tareas Pendientes -->
+            <div class="column pending-column">
+                <div class="column-header">Tareas Pendientes</div>
+                <div class="task-list" id="pendingTasks">
+                    <!-- Tareas pendientes se cargarán aquí -->
+                    <div class="task-item" style="text-align: center; background: rgba(0,0,0,0.3);">
+                        Cargando tareas pendientes...
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Columna de Tareas Completadas -->
+            <div class="column completed-column">
+                <div class="column-header">Tareas Completadas</div>
+                <div class="drop-zone" id="completedDropZone">
+                    Arrastra aquí las tareas completadas
+                </div>
+                <div class="task-list" id="completedTasks">
+                    <!-- Tareas completadas aparecerán aquí temporalmente -->
+                    <div style="text-align: center; padding: 20px; opacity: 0.7;">
+                        Las tareas completadas aparecerán aquí
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración
+        const API_URL = 'http://localhost:8000';
+        
+        // Elementos DOM
+        const taskNameInput = document.getElementById('taskName');
+        const taskDateInput = document.getElementById('taskDate');
+        const addButton = document.getElementById('addTask');
+        const pendingTasks = document.getElementById('pendingTasks');
+        const completedTasks = document.getElementById('completedTasks');
+        const dropZone = document.getElementById('completedDropZone');
+        
+        // Variables para drag & drop
+        let draggedTask = null;
+        
+        // Cargar tareas al iniciar
+        document.addEventListener('DOMContentLoaded', loadPendingTasks);
+        
+        // Evento para agregar tarea
+        addButton.addEventListener('click', addNewTask);
+        
+        // Configurar eventos de drag & drop
+        setupDragAndDrop();
+        
+        // Función para cargar tareas pendientes
+        async function loadPendingTasks() {
+            try {
+                const response = await fetch(`${API_URL}/tareas`);
+                const tasks = await response.json();
+                
+                renderPendingTasks(tasks);
+            } catch (error) {
+                console.error('Error cargando tareas:', error);
+                pendingTasks.innerHTML = `<div class="task-item error">Error conectando al backend. Asegúrate que el servidor Go está corriendo en ${API_URL}</div>`;
+            }
+        }
+        
+        // Función para renderizar tareas pendientes
+        function renderPendingTasks(tasks) {
+            if (tasks.length === 0) {
+                pendingTasks.innerHTML = '<div class="task-item">No hay tareas pendientes</div>';
+                return;
+            }
+            
+            pendingTasks.innerHTML = '';
+            
+            tasks.forEach(task => {
+                const taskElement = createTaskElement(task);
+                pendingTasks.appendChild(taskElement);
+            });
+        }
+        
+        // Función para crear elemento de tarea
+        function createTaskElement(task) {
+            const taskElement = document.createElement('div');
+            taskElement.className = 'task-item';
+            taskElement.draggable = true;
+            taskElement.dataset.task = task.tarea;
+            taskElement.innerHTML = `
+                <div class="task-name">${task.tarea}</div>
+                <div class="task-date">Plazo: ${task.plaso}</div>
+            `;
+            
+            // Eventos de drag & drop
+            taskElement.addEventListener('dragstart', handleDragStart);
+            taskElement.addEventListener('dragend', handleDragEnd);
+            
+            return taskElement;
+        }
+        
+        // Configurar sistema de drag & drop
+        function setupDragAndDrop() {
+            // Eventos para la zona de drop
+            dropZone.addEventListener('dragover', handleDragOver);
+            dropZone.addEventListener('dragenter', handleDragEnter);
+            dropZone.addEventListener('dragleave', handleDragLeave);
+            dropZone.addEventListener('drop', handleDrop);
+        }
+        
+        // Handlers para drag & drop
+        function handleDragStart(e) {
+            draggedTask = this;
+            this.classList.add('dragging');
+            e.dataTransfer.setData('text/plain', this.dataset.task);
+        }
+        
+        function handleDragEnd() {
+            this.classList.remove('dragging');
+            draggedTask = null;
+        }
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+        
+        function handleDragEnter(e) {
+            e.preventDefault();
+            this.classList.add('active');
+        }
+        
+        function handleDragLeave() {
+            this.classList.remove('active');
+        }
+        
+        async function handleDrop(e) {
+            e.preventDefault();
+            this.classList.remove('active');
+            
+            const taskName = e.dataTransfer.getData('text/plain');
+            
+            if (!taskName) return;
+            
+            // Confirmar si realmente se quiere completar la tarea
+            if (!confirm(`¿Marcar "${taskName}" como completada?`)) {
+                return;
+            }
+            
+            // Eliminar la tarea del backend
+            try {
+                const response = await fetch(`${API_URL}/eliminar`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        tarea: taskName
+                    })
+                });
+                
+                if (response.ok) {
+                    // Eliminar la tarea del DOM
+                    const taskElement = document.querySelector(`.task-item[data-task="${taskName}"]`);
+                    if (taskElement) {
+                        taskElement.remove();
+                        
+                        // Mostrar temporalmente en completadas
+                        const completedElement = document.createElement('div');
+                        completedElement.className = 'task-item';
+                        completedElement.innerHTML = `
+                            <div class="task-name">${taskName}</div>
+                            <div class="task-date">Completada: ${new Date().toLocaleDateString()}</div>
+                        `;
+                        completedTasks.prepend(completedElement);
+                        
+                        // Desaparecer después de 3 segundos
+                        setTimeout(() => {
+                            completedElement.style.opacity = '0';
+                            setTimeout(() => completedElement.remove(), 500);
+                        }, 3000);
+                    }
+                    
+                    // Recargar si no quedan tareas
+                    if (pendingTasks.children.length === 0) {
+                        loadPendingTasks();
+                    }
+                } else {
+                    alert('Error completando la tarea');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error de conexión con el backend');
+            }
+        }
+        
+        // Función para agregar nueva tarea
+        async function addNewTask() {
+            const taskName = taskNameInput.value.trim();
+            const taskDate = taskDateInput.value;
+            
+            if (!taskName) {
+                alert('Por favor ingresa el nombre de la tarea');
+                return;
+            }
+            
+            if (!taskDate) {
+                alert('Por favor selecciona una fecha de plazo');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/crear`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        tarea: taskName,
+                        plaso: taskDate
+                    })
+                });
+                
+                if (response.ok) {
+                    // Limpiar inputs
+                    taskNameInput.value = '';
+                    taskDateInput.value = '';
+                    
+                    // Recargar tareas pendientes
+                    loadPendingTasks();
+                } else {
+                    alert('Error creando la tarea');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error de conexión con el backend');
+            }
+        }
+    </script>
+</body>
+</html>
